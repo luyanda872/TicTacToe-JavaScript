@@ -1,0 +1,70 @@
+#grid{
+    border-radius: 4px;
+    position: relative;
+    filter: blur(15px);
+}
+.check{
+    background-color: black;
+    position: absolute;
+    width: 150px;
+    height: 150px;
+}
+
+#box{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height:60vh;
+    border-radius: 4px;
+}
+#text{
+    font-family: cursive;
+    font-size: 50px;
+    font-weight: bold;
+    padding-top: 3%;
+    padding-left: 5%;
+}
+.res{
+    font-family: cursive;
+    font-size: 30px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin: 0px;
+}
+#buttons{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(200, 203, 206);
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px;
+    
+}
+.b{
+    font-family: cursive;
+    background-color: rgb(200, 203, 206);
+    border-radius: 5px;
+    width: 100px;
+    border-style: none;
+}
+label{
+    font-family: cursive;
+}
+.b:hover{
+    background-color: rgb(155, 159, 163);
+}
+
+#p{
+    display: none;
+}
+#s{
+    display: none;
+}
+
+
+#player{
+    background-color: black;
+    display: floa;
+}
