@@ -232,7 +232,10 @@ drawCanvas();
 let won = false;
 
 let startPC = true;
-document.getElementById("p").innerHTML = "Play: O";
+
+
+
+
 function eventSeterPlay() {
 
     let player;
@@ -248,31 +251,31 @@ function eventSeterPlay() {
             console.log(x0 * 2, y0 * 2);
             console.log(x, y);
 
-            //=======================================================play with PC==========================================================================================
-            
-            //=====================================================================================================================================================
-
             if (!playPC || withPlayer2) {
                 playPC = true;
                 if (pO) {
                     player = "O";
-                    document.getElementById("p").innerHTML = "Play: X";
+
                     pO = false;
                     pX = true;
                     if (!insert(x, y, player)) {
                         pO = true;
                         pX = false;
                     }
+                    if (withPlayer2 && pX)
+                        document.getElementById("p").innerHTML = "Play: X";
                 }
                 else {
                     player = "X";
-                    document.getElementById("p").innerHTML = "Play: O";
+
                     pO = true;
                     pX = false;
                     if (!insert(x, y, player)) {
                         pO = false;
                         pX = true;
                     }
+                    if (withPlayer2 && pO)
+                        document.getElementById("p").innerHTML = "Play: O";
 
                 }
             }
@@ -281,19 +284,26 @@ function eventSeterPlay() {
 
             ss = winning(player);
 
-            
+
         }
         else {
             console.log("hi...");
-            won = false;
             drawCanvas();
-            player = player == "O" ? "X" : "O";
-            document.getElementById("p").innerHTML = "Play: " + player;
+            if (withPlayer2) {
+                player = player == "O" ? "X" : "O";
+                document.getElementById("p").innerHTML = "Play: " + player;
+            }
+            else
+                document.getElementById("p").innerHTML = "Play: with PC";
+            won = false;
         }
-        if (!withPlayer2 && ss==false) {
-            if (playPC) {
+        if (!withPlayer2) {
+            if (playPC && won == false) {
                 playPC = false;
-                PlayPC(player);
+                setTimeout(() => {
+                    PlayPC(player)
+                }, 500);
+
 
             }
 
@@ -304,8 +314,16 @@ function eventSeterPlay() {
 
 }
 
-function winning(player){
+function winning(player) {
     let t = checWin(player);
+    let total = 0;
+    for (let i = 0; i < gridArr.length; i++) {
+        for (let j = 0; j < gridArr.length; j++) {
+            if (gridArr[i][j] == "") {
+                total++;
+            }
+        }
+    }
     if (t) {
         if (player == "X") {
             scoreX++;
@@ -380,6 +398,15 @@ function winning(player){
         result = [[false, 0], [false, 0], [false, 0], [false, 0]];
 
     }
+    if (total == 0) {
+        won = true;
+        document.getElementById("p").innerHTML = `it's a tie !!!`;
+        for (let i = 0; i < gridArr.length; i++) {
+            for (let j = 0; j < gridArr.length; j++) {
+                gridArr[i][j] = "";
+            }
+        }
+    }
     return t;
 }
 
@@ -391,6 +418,7 @@ document.getElementById("b1").onclick = function () {
     document.getElementById("grid").style.filter = "none";
     eventSeterPlay();
     withPlayer2 = false;
+    document.getElementById("p").innerHTML = "Play: with PC";
 };
 
 document.getElementById("b2").onclick = function () {
@@ -401,6 +429,7 @@ document.getElementById("b2").onclick = function () {
     eventSeterPlay();
     withPlayer2 = true;
     playPC = false;
+    document.getElementById("p").innerHTML = "Play: O";
 };
 
 function PlayPC(player) {
@@ -410,24 +439,30 @@ function PlayPC(player) {
     player = opp == "O" ? "X" : "O";
     let x = Math.floor(Math.random() * 3)
     let y = Math.floor(Math.random() * 3);
+    let f = false;
     //checWin
     for (let i = 0; i < gridArr.length; i++) {
+        if (f) {
+            break;
+        }
         hor = checkHor(player, i);
         ver = checkVer(player, i);
-        if (hor[0] && hor[1]==2) {
+        if (hor[0] && hor[1] == 2) {
             for (let j = 0; j < gridArr.length; j++) {
                 if (gridArr[i][j] == "") {
                     gridArr[i][j] = player;
                     w = true;
+                    f = true;
                     break;
                 }
             }
         }
-        else if (ver[0] && ver[1]==2) {
+        else if (ver[0] && ver[1] == 2) {
             for (let j = 0; j < gridArr.length; j++) {
                 if (gridArr[j][i] == "") {
                     gridArr[j][i] = player;
                     w = true;
+                    f = true;
                     break;
                 }
             }
@@ -439,12 +474,15 @@ function PlayPC(player) {
         dir2 = checkDir2(player);
         if (dir1[0] && dir1[1] == 2) {
             for (let i = 0; i < gridArr.length; i++) {
+                if (f) {
+                    break;
+                }
                 for (let j = 0; j < gridArr.length; j++) {
                     if (i == j) {
                         if (gridArr[i][j] == "") {
                             gridArr[i][j] = player;
                             w = true;
-    
+                            f = true;
                             break;
                         }
                     }
@@ -453,12 +491,15 @@ function PlayPC(player) {
         }
         else if (dir2[0] && dir2 == 2) {
             for (let i = 0; i < gridArr.length; i++) {
+                if (f) {
+                    break;
+                }
                 for (let j = gridArr.length - 1; j >= 0; j--) {
                     if ((i == 0 && j == 2) || (i == 1 && j == 1) || (i == 2 && j == 0)) {
                         if (gridArr[i][j] == "") {
                             gridArr[i][j] = player;
                             w = true;
-    
+                            f = true;
                             break;
                         }
                     }
@@ -468,8 +509,11 @@ function PlayPC(player) {
     }
 
     //checklose
-    if (!w){
+    if (!w) {
         for (let i = 0; i < gridArr.length; i++) {
+            if (f) {
+                break;
+            }
             hor = checkHor(opp, i);
             ver = checkVer(opp, i);
             if (hor[0] && hor[1] == 2) {
@@ -477,6 +521,7 @@ function PlayPC(player) {
                     if (gridArr[i][j] == "") {
                         gridArr[i][j] = player;
                         w = true;
+                        f = w;
                         break;
                     }
                 }
@@ -486,6 +531,7 @@ function PlayPC(player) {
                     if (gridArr[j][i] == "") {
                         gridArr[j][i] = player;
                         w = true;
+                        f = w;
                         break;
                     }
                 }
@@ -497,12 +543,15 @@ function PlayPC(player) {
             dir2 = checkDir2(opp);
             if (dir1[0] && dir1[1] == 2) {
                 for (let i = 0; i < gridArr.length; i++) {
+                    if (f) {
+                        break;
+                    }
                     for (let j = 0; j < gridArr.length; j++) {
                         if (i == j) {
                             if (gridArr[i][j] == "") {
                                 gridArr[i][j] = player;
                                 w = true;
-        
+                                f = w;
                                 break;
                             }
                         }
@@ -511,12 +560,15 @@ function PlayPC(player) {
             }
             else if (dir2[0] && dir2[1] == 2) {
                 for (let i = 0; i < gridArr.length; i++) {
+                    if (f) {
+                        break;
+                    }
                     for (let j = gridArr.length - 1; j >= 0; j--) {
                         if ((i == 0 && j == 2) || (i == 1 && j == 1) || (i == 2 && j == 0)) {
                             if (gridArr[i][j] == "") {
                                 gridArr[i][j] = player;
                                 w = true;
-        
+                                f = w;
                                 break;
                             }
                         }
@@ -525,26 +577,21 @@ function PlayPC(player) {
             }
         }
     }
-    let g = false;
-
+    let g = [];
     if (!w) {
         for (let i = 0; i < gridArr.length; i++) {
-            if (g) {
-                break;
-            }
             for (let j = 0; j < gridArr.length; j++) {
                 if (gridArr[i][j] == "") {
-                    gridArr[i][j] = player;
-                    g = true;
-                    break;
+                    g.push([i,j]);
                 }
-                
             }
         }
+        let indexing = g[Math.floor(Math.random() * g.length)];
+        gridArr[indexing[0]][indexing[1]] = player;
     }
     drawCanvas();
-    winning(player);
+    let results = winning(player);
     player = opp;
-    pO = player == "O" ? true:false;
-    
+    pO = player == "O" ? true : false;
 }
+function stall() {console.log("stalling");}
